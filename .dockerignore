@@ -3,6 +3,8 @@ node_modules
 .git
 .DS_Store
 .env
+.env.*
+!.env.example
 data
 public/uploads/*
 docs

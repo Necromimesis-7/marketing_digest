@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "4179:3000"
+    env_file:
+      - .env.docker
+    volumes:
+      - ./data:/app/data
+      - ./public/uploads:/app/public/uploads
+    restart: unless-stopped

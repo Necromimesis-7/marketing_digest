@@ -55,10 +55,16 @@ POPO_CARD_CALLBACK_CONFIG_KEY=""
 
 ## Docker 部署
 
-服务器上准备 `.env`、`data/`、`public/uploads/` 后运行：
+服务器上准备 `.env.docker`、`data/`、`public/uploads/` 后运行：
 
 ```bash
-docker compose up -d --build
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+线上容器内数据库路径建议使用：
+
+```text
+DATABASE_URL="file:../data/app.db"
 ```
 
 建议用 Caddy 或 Nginx 在外层配置 HTTPS，并让 `APP_BASE_URL` 指向最终公网域名。
