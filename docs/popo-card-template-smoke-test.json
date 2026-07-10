@@ -1,0 +1,73 @@
+{
+  "type": "view",
+  "style": {
+    "width": "100%",
+    "backgroundColor": "card-L/white",
+    "borderRadius": 8,
+    "paddingTop": 18,
+    "paddingRight": 18,
+    "paddingBottom": 16,
+    "paddingLeft": 18
+  },
+  "children": [
+    {
+      "type": "text",
+      "attrs": [
+        {
+          "name": "content",
+          "value": "POPO 卡片模板冒烟测试"
+        },
+        {
+          "name": "bold",
+          "value": true
+        },
+        {
+          "name": "numberOfLines",
+          "value": 2
+        }
+      ],
+      "style": {
+        "fontSize": "XXLarge",
+        "lineHeight": "Loose",
+        "marginBottom": 10
+      }
+    },
+    {
+      "type": "text",
+      "attrs": [
+        {
+          "name": "content",
+          "value": "如果你能看到这段固定文字，说明 JSON 模板已经保存并生效。"
+        },
+        {
+          "name": "numberOfLines",
+          "value": 3
+        }
+      ],
+      "style": {
+        "fontSize": "Medium",
+        "lineHeight": "Loose",
+        "marginBottom": 10
+      }
+    },
+    {
+      "type": "divider",
+      "style": {
+        "marginTop": 4,
+        "marginBottom": 4
+      }
+    },
+    {
+      "type": "jump",
+      "attrs": [
+        {
+          "name": "content",
+          "value": "固定阅读全文"
+        }
+      ],
+      "style": {
+        "marginTop": 12
+      }
+    }
+  ]
+}

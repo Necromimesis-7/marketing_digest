@@ -1,0 +1,214 @@
+{
+  "type": "view",
+  "style": {
+    "width": "100%",
+    "backgroundColor": "card-L/white",
+    "borderRadius": 8,
+    "overflow": "hidden"
+  },
+  "children": [
+    {
+      "type": "image",
+      "directive": {
+        "name": "pp:if",
+        "value": "this.data.hasCover"
+      },
+      "attrs": [
+        {
+          "name": "src",
+          "value": "this.data.coverUrl",
+          "dynamic": true
+        },
+        {
+          "name": "ratio",
+          "value": 2
+        },
+        {
+          "name": "showPlaceholder",
+          "value": true
+        },
+        {
+          "name": "showFailedHolder",
+          "value": true
+        },
+        {
+          "name": "followFontSize",
+          "value": false
+        }
+      ],
+      "style": {
+        "margin": 0,
+        "borderRadius": 8
+      }
+    },
+    {
+      "type": "view",
+      "style": {
+        "paddingTop": 18,
+        "paddingRight": 18,
+        "paddingBottom": 16,
+        "paddingLeft": 18
+      },
+      "children": [
+        {
+          "type": "text",
+          "attrs": [
+            {
+              "name": "content",
+              "value": "this.data.columnTitle",
+              "dynamic": true
+            },
+            {
+              "name": "bold",
+              "value": true
+            }
+          ],
+          "style": {
+            "fontSize": "Small",
+            "marginBottom": 8
+          }
+        },
+        {
+          "type": "text",
+          "attrs": [
+            {
+              "name": "content",
+              "value": "this.data.title",
+              "dynamic": true
+            },
+            {
+              "name": "bold",
+              "value": true
+            },
+            {
+              "name": "numberOfLines",
+              "value": 3
+            }
+          ],
+          "style": {
+            "fontSize": "XXLarge",
+            "lineHeight": "Loose",
+            "marginBottom": 8
+          }
+        },
+        {
+          "type": "text",
+          "directive": {
+            "name": "pp:if",
+            "value": "!this.data.title"
+          },
+          "attrs": [
+            {
+              "name": "content",
+              "value": "模板变量未绑定：请检查 JS 是否已保存，以及模板变量 title/summary/articleUrl 是否已定义。"
+            },
+            {
+              "name": "numberOfLines",
+              "value": 3
+            }
+          ],
+          "style": {
+            "fontSize": "Medium",
+            "lineHeight": "Loose",
+            "marginBottom": 8
+          }
+        },
+        {
+          "type": "text",
+          "attrs": [
+            {
+              "name": "content",
+              "value": "this.data.summary",
+              "dynamic": true
+            },
+            {
+              "name": "numberOfLines",
+              "value": 3
+            }
+          ],
+          "style": {
+            "fontSize": "Medium",
+            "lineHeight": "Loose",
+            "marginBottom": 12
+          }
+        },
+        {
+          "type": "divider",
+          "directive": {
+            "name": "pp:if",
+            "value": "this.data.hasItems"
+          },
+          "style": {
+            "marginTop": 4,
+            "marginBottom": 4
+          }
+        },
+        {
+          "type": "view",
+          "directive": {
+            "name": "pp:for",
+            "value": "this.data.itemList",
+            "limit": 5
+          },
+          "events": {
+            "click": "this.openItem"
+          },
+          "style": {
+            "paddingTop": 10,
+            "paddingBottom": 10
+          },
+          "children": [
+            {
+              "type": "divider",
+              "directive": {
+                "name": "pp:if",
+                "value": "item.index > 1"
+              },
+              "style": {
+                "marginBottom": 10
+              }
+            },
+            {
+              "type": "text",
+              "attrs": [
+                {
+                  "name": "content",
+                  "value": "item.line",
+                  "dynamic": true
+                },
+                {
+                  "name": "numberOfLines",
+                  "value": 2
+                }
+              ],
+              "style": {
+                "fontSize": "Large",
+                "lineHeight": "Loose"
+              }
+            }
+          ]
+        },
+        {
+          "type": "jump",
+          "attrs": [
+            {
+              "name": "content",
+              "value": "this.data.readMoreText",
+              "dynamic": true
+            },
+            {
+              "name": "hoverCursor",
+              "value": "pointer"
+            }
+          ],
+          "events": {
+            "click": "this.openArticle"
+          },
+          "style": {
+            "marginTop": 12
+          }
+        }
+      ]
+    }
+  ]
+}

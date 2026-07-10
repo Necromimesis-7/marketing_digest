@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("member")
+  status       String   @default("active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  articles     Article[] @relation("SubmittedArticles")
+}
+
+model Article {
+  id             String         @id @default(cuid())
+  title          String
+  summary        String         @default("")
+  coverImageUrl  String?
+  contentHtml    String
+  contentBlocksJson String?
+  status         String         @default("submitted")
+  publicToken    String?        @unique
+  submittedBy    String
+  submittedByUserId String?
+  submittedByUser   User?       @relation("SubmittedArticles", fields: [submittedByUserId], references: [id], onDelete: SetNull)
+  sourceType     String
+  sourceFilePath String?
+  notes          String?
+  reviewNote     String?
+  publishedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  assets         ArticleAsset[]
+  pushLogs       PushLog[]
+  issueItems     DigestIssueItem[]
+}
+
+model ArticleAsset {
+  id        String   @id @default(cuid())
+  articleId String
+  type      String
+  fileName  String
+  filePath  String
+  publicUrl String?
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model PopoChannel {
+  id              String    @id @default(cuid())
+  name            String
+  receiverTid     String
+  channelType     String    @default("production")
+  enabled         Boolean   @default(true)
+  lastCheckedAt   DateTime?
+  lastCheckStatus String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  pushLogs        PushLog[]
+}
+
+model PushLog {
+  id             String       @id @default(cuid())
+  articleId      String?
+  issueId        String?
+  channelId      String?
+  receiverTid    String
+  msgType        String       @default("rich_text")
+  msgId          String?
+  status         String
+  errcode        Int?
+  errmsg         String?
+  requestSummary String?
+  retryCount     Int          @default(0)
+  pushedAt       DateTime?
+  recalledAt     DateTime?
+  createdAt      DateTime     @default(now())
+  article        Article?     @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  issue          DigestIssue? @relation(fields: [issueId], references: [id], onDelete: SetNull)
+  channel        PopoChannel? @relation(fields: [channelId], references: [id], onDelete: SetNull)
+}
+
+model DigestIssue {
+  id             String            @id @default(cuid())
+  title          String
+  summary        String            @default("")
+  coverImageUrl  String?
+  status         String            @default("published")
+  publicToken    String?           @unique
+  publishedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  items          DigestIssueItem[]
+  pushLogs       PushLog[]
+}
+
+model DigestIssueItem {
+  id              String      @id @default(cuid())
+  issueId         String
+  articleId       String
+  position        Int
+  titleOverride   String?
+  summaryOverride String?
+  createdAt       DateTime    @default(now())
+  issue           DigestIssue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  article         Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([issueId, articleId])
+  @@unique([issueId, position])
+}
+
+model ErrorLog {
+  id        String   @id @default(cuid())
+  scope     String
+  message   String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model PopoToken {
+  id               String   @id
+  accessToken      String
+  accessExpiredAt  DateTime
+  refreshToken     String
+  refreshExpiredAt DateTime
+  updatedAt        DateTime @updatedAt
+}
+
+model CardConfig {
+  id                   String   @id
+  templateUuid         String   @default("")
+  columnTitle          String   @default("创意营销案例分享")
+  buttonText           String   @default("阅读全文")
+  defaultCoverImageUrl String?
+  itemLimit            Int      @default(4)
+  itemSource           String   @default("auto")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}

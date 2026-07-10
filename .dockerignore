@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.DS_Store
+.env
+data
+public/uploads/*
+docs
+output
+tmp

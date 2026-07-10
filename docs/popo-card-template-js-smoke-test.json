@@ -1,0 +1,70 @@
+{
+  "type": "view",
+  "style": {
+    "width": "100%",
+    "backgroundColor": "card-L/white",
+    "borderRadius": 8,
+    "paddingTop": 18,
+    "paddingRight": 18,
+    "paddingBottom": 16,
+    "paddingLeft": 18
+  },
+  "children": [
+    {
+      "type": "text",
+      "attrs": [
+        {
+          "name": "content",
+          "value": "JS 动态绑定测试"
+        },
+        {
+          "name": "bold",
+          "value": true
+        }
+      ],
+      "style": {
+        "fontSize": "XXLarge",
+        "lineHeight": "Loose",
+        "marginBottom": 10
+      }
+    },
+    {
+      "type": "text",
+      "attrs": [
+        {
+          "name": "content",
+          "value": "this.data.dynamicText",
+          "dynamic": true
+        },
+        {
+          "name": "numberOfLines",
+          "value": 3
+        }
+      ],
+      "style": {
+        "fontSize": "Medium",
+        "lineHeight": "Loose",
+        "marginBottom": 10
+      }
+    },
+    {
+      "type": "divider",
+      "style": {
+        "marginTop": 4,
+        "marginBottom": 4
+      }
+    },
+    {
+      "type": "jump",
+      "attrs": [
+        {
+          "name": "content",
+          "value": "动态测试完成"
+        }
+      ],
+      "style": {
+        "marginTop": 12
+      }
+    }
+  ]
+}
