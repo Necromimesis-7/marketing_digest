@@ -46,6 +46,19 @@ async function saveIssueCover(formData: FormData) {
   return coverUrl || null;
 }
 
+function compactTopic(title: string) {
+  const cleanTitle = title.replace(/\s+/g, " ").trim();
+  const [prefix] = cleanTitle.split(/[：:]/).map((part) => part.trim()).filter(Boolean);
+  const topic = prefix && prefix.length <= 32 ? prefix : cleanTitle;
+  return topic.length > 36 ? `${topic.slice(0, 36).trim()}...` : topic;
+}
+
+function generatedIssueSummary(articles: Array<{ title: string }>) {
+  const topics = articles.map((article) => compactTopic(article.title)).filter(Boolean);
+  if (!topics.length) return "";
+  return `本期收录 ${articles.length} 篇创意营销案例，涵盖 ${topics.join("、")}。`;
+}
+
 async function ensureArticlePublic(article: {
   id: string;
   status: string;
@@ -84,13 +97,10 @@ function errorDetails(error: unknown) {
 export async function createIssueAction(formData: FormData) {
   await requireRole(["owner", "admin"]);
 
-  const title = String(formData.get("title") || "").trim();
-  const summary = String(formData.get("summary") || "").trim();
+  const titleInput = String(formData.get("title") || "").trim();
+  const summaryInput = String(formData.get("summary") || "").trim();
   const articleIds = selectedArticleIds(formData);
 
-  if (!title) {
-    redirect("/admin/issues?error=missing-title");
-  }
   validateItemCount(articleIds, "/admin/issues");
 
   const articles = await db.article.findMany({
@@ -108,7 +118,15 @@ export async function createIssueAction(formData: FormData) {
     await ensureArticlePublic(article);
   }
 
-  const coverImageUrl = await saveIssueCover(formData);
+  const [issueCount, cardConfig] = await Promise.all([db.digestIssue.count(), getCardConfig()]);
+  const title = titleInput || `Creative Spark 第 ${issueCount + 1} 期｜创意营销案例分享`;
+  const summary = summaryInput || generatedIssueSummary(issueArticles);
+  const coverImageUrl =
+    (await saveIssueCover(formData)) ||
+    issueArticles.find((article) => article.coverImageUrl)?.coverImageUrl ||
+    cardConfig.defaultCoverImageUrl ||
+    null;
+
   const issue = await db.digestIssue.create({
     data: {
       title,
@@ -128,6 +146,37 @@ export async function createIssueAction(formData: FormData) {
 
   revalidatePath("/admin/issues");
   redirect(`/admin/issues/${issue.id}?created=1`);
+}
+
+export async function updateIssueMetaAction(formData: FormData) {
+  await requireRole(["owner", "admin"]);
+
+  const issueId = String(formData.get("issueId") || "");
+  const title = String(formData.get("title") || "").trim();
+  const summary = String(formData.get("summary") || "").trim();
+  const currentCover = String(formData.get("currentCoverImageUrl") || "").trim();
+  const coverImageUrl = (await saveIssueCover(formData)) || currentCover || null;
+
+  if (!issueId) {
+    redirect("/admin/issues");
+  }
+
+  if (!title) {
+    issueRedirect(issueId, "?error=missing-title");
+  }
+
+  await db.digestIssue.update({
+    where: { id: issueId },
+    data: {
+      title,
+      summary,
+      coverImageUrl
+    }
+  });
+
+  revalidatePath("/admin/issues");
+  revalidatePath(`/admin/issues/${issueId}`);
+  issueRedirect(issueId, "?saved=1");
 }
 
 export async function archiveIssueAction(formData: FormData) {

@@ -1,9 +1,9 @@
-import { ExternalLink, RotateCcw, Send } from "lucide-react";
+import { ExternalLink, RotateCcw, Save, Send } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { StatusBadge } from "@/components/status-badge";
-import { pushIssueAction } from "@/lib/actions/issue-actions";
+import { pushIssueAction, updateIssueMetaAction } from "@/lib/actions/issue-actions";
 import { recallPushAction } from "@/lib/actions/popo-actions";
 import { getCardConfig } from "@/lib/card-config";
 import { absoluteUrl, publicArticleUrl, publicIssueUrl } from "@/lib/content";
@@ -15,6 +15,8 @@ function errorMessage(error?: string) {
       return "请选择至少一个群。";
     case "missing-msgid":
       return "这条记录缺少 msgId，无法撤回。";
+    case "missing-title":
+      return "期数标题不能为空。";
     default:
       return "";
   }
@@ -25,7 +27,7 @@ export default async function IssueDetailPage({
   searchParams
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string; created?: string; pushed?: string; failed?: string; recalled?: string }>;
+  searchParams: Promise<{ error?: string; created?: string; saved?: string; pushed?: string; failed?: string; recalled?: string }>;
 }) {
   const routeParams = await params;
   const [query, issue, channels, cardConfig] = await Promise.all([
@@ -71,6 +73,7 @@ export default async function IssueDetailPage({
       </div>
 
       {query.created ? <div className="notice" style={{ marginBottom: 18 }}>期数已创建。</div> : null}
+      {query.saved ? <div className="notice" style={{ marginBottom: 18 }}>期数信息已保存。</div> : null}
       {query.pushed ? (
         <div className="notice" style={{ marginBottom: 18 }}>
           推送完成：成功 {query.pushed}，失败 {query.failed || 0}。
@@ -117,6 +120,34 @@ export default async function IssueDetailPage({
               ))}
             </ol>
           </div>
+          <form action={updateIssueMetaAction} className="workspace-section stack">
+            <input type="hidden" name="issueId" value={issue.id} />
+            <input type="hidden" name="currentCoverImageUrl" value={issue.coverImageUrl || ""} />
+            <div className="workspace-header compact">
+              <strong>编辑本期信息</strong>
+              <p className="muted">用于调整 POPO 卡片主标题、摘要、头图，以及合集页展示。</p>
+            </div>
+            <div className="field">
+              <label htmlFor="title">期数标题</label>
+              <input id="title" name="title" defaultValue={issue.title} />
+            </div>
+            <div className="field">
+              <label htmlFor="summary">期数摘要</label>
+              <textarea id="summary" name="summary" defaultValue={issue.summary} />
+            </div>
+            <div className="field">
+              <label htmlFor="coverImageUrl">封面图 URL</label>
+              <input id="coverImageUrl" name="coverImageUrl" defaultValue={issue.coverImageUrl || ""} placeholder="https://... 或 /uploads/..." />
+            </div>
+            <div className="field">
+              <label htmlFor="coverImageFile">上传新封面</label>
+              <input id="coverImageFile" name="coverImageFile" type="file" accept="image/*" />
+            </div>
+            <button className="button secondary" type="submit">
+              <Save size={16} />
+              保存本期信息
+            </button>
+          </form>
           <form action={pushIssueAction} className="workspace-section stack">
             <input type="hidden" name="issueId" value={issue.id} />
             <div className="field">

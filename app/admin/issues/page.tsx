@@ -131,22 +131,26 @@ export default async function IssuesPage({
         <aside className="workspace">
           <div className="workspace-header">
             <strong>新建一期</strong>
+            <p className="muted">只选案例即可创建；标题、摘要、封面会自动生成，也可以手动覆盖。</p>
           </div>
           <form action={createIssueAction} className="workspace-section stack">
             <div className="field">
-              <label htmlFor="title">期数标题</label>
-              <input id="title" name="title" placeholder="例如：本周 PC/Console 创意营销案例" />
+              <label htmlFor="title">自定义期数标题</label>
+              <input id="title" name="title" placeholder="留空自动生成，例如：Creative Spark 第 1 期｜创意营销案例分享" />
+              <span className="field-help">留空时会按当前期数自动生成。</span>
             </div>
             <div className="field">
-              <label htmlFor="summary">期数摘要</label>
-              <textarea id="summary" name="summary" placeholder="本期推送的主题和看点" />
+              <label htmlFor="summary">自定义期数摘要</label>
+              <textarea id="summary" name="summary" placeholder="留空自动根据所选案例标题生成本期看点" />
+              <span className="field-help">留空时会从选中的 1-5 个案例里提取主题。</span>
             </div>
             <div className="field">
-              <label htmlFor="coverImageUrl">封面图 URL</label>
-              <input id="coverImageUrl" name="coverImageUrl" placeholder="https://... 或 /uploads/..." />
+              <label htmlFor="coverImageUrl">自定义封面图 URL</label>
+              <input id="coverImageUrl" name="coverImageUrl" placeholder="留空自动使用第一个有封面的案例" />
+              <span className="field-help">{"优先级：上传封面 > 封面 URL > 第一个案例封面 > 卡片默认封面。"}</span>
             </div>
             <div className="field">
-              <label htmlFor="coverImageFile">上传封面</label>
+              <label htmlFor="coverImageFile">上传自定义封面</label>
               <input id="coverImageFile" name="coverImageFile" type="file" accept="image/*" />
             </div>
             <div className="field">
