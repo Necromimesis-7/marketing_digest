@@ -40,6 +40,12 @@ function getSecret() {
   return process.env.APP_SESSION_SECRET || "development-session-secret";
 }
 
+function secureCookieEnabled() {
+  if (process.env.AUTH_COOKIE_SECURE === "true") return true;
+  if (process.env.AUTH_COOKIE_SECURE === "false") return false;
+  return (process.env.APP_BASE_URL || "").startsWith("https://");
+}
+
 function sign(payload: string) {
   return crypto.createHmac("sha256", getSecret()).update(payload).digest("hex");
 }
@@ -96,7 +102,7 @@ export async function setSession(user: { id: string; role: string; name: string;
   cookieStore.set(COOKIE_NAME, encodeSession({ userId: user.id, role, name: user.name, email: user.email, createdAt: Date.now() }), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: secureCookieEnabled(),
     path: "/",
     maxAge: 60 * 60 * 24 * 14
   });
